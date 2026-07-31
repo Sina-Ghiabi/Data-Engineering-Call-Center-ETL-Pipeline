@@ -126,7 +126,6 @@ class Dashboard:
         self.window.configure(background=theme.COLOR_BACKGROUND)
         self.buttons = {}
         self.figure = None
-        self.ax = None
         self.canvas = None
 
         if dashboard_data.total_calls() == 0:
@@ -160,14 +159,19 @@ class Dashboard:
         card.pack(fill="both", expand=True, padx=theme.PAD, pady=(0, theme.PAD))
 
         self.figure = Figure(figsize=(9, 6), dpi=100, facecolor=theme.CHART_SURFACE)
-        self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, master=card)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
     def show_chart(self, key: str) -> None:
         draw_by_key = {k: draw for k, _label, draw in CHART_SPECS}
-        self.ax.clear()
-        draw_by_key[key](self.ax)
+
+        # A fresh Axes per chart, not ax.clear() on a reused one: matplotlib's
+        # categorical unit converter is cached per-Axis and survives clear(),
+        # so switching between different sets of string categories on the same
+        # Axes left stale unit data behind and collapsed the bar widths/positions.
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+        draw_by_key[key](ax)
         self.figure.tight_layout()
         self.canvas.draw()
 
