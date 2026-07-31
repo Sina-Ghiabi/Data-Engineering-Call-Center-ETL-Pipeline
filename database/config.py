@@ -6,5 +6,5 @@ DB_NAME = os.environ.get("ANALYZER_DB_NAME", "Users")
 DB_USERNAME = os.environ.get("ANALYZER_DB_USERNAME")
 DB_PASSWORD = os.environ.get("ANALYZER_DB_PASSWORD")
 
-WINDOW_TITLE = "Analyze Data"
-WINDOW_SIZE = "1000x620"
+WINDOW_TITLE = "Call Center Analytics"
+WINDOW_SIZE = "1280x760"

@@ -1,31 +1,29 @@
-from tkinter import Label, OptionMenu, StringVar
+from tkinter import StringVar, ttk
 
 import constants
 from database import dropdown_values
+from ui import theme
 
 selections = {}
 
 
 class Dropdown:
-    def __init__(self, parent, label_text, field_name, row, column):
+    def __init__(self, parent, label_text, field_name):
         self.parent = parent
         self.label_text = label_text
         self.field_name = field_name
-        self.row = row
-        self.column = column
-        self.value = None
+        self.variable = StringVar()
 
-    def create(self):
-        self.value = StringVar(self.parent)
-        self.value.set(constants.SELECT_PLACEHOLDER)
+    def create(self, row: int) -> None:
+        ttk.Label(self.parent, text=self.label_text, style="Card.TLabel").grid(
+            row=row, column=0, sticky="w", pady=(0, 2)
+        )
 
-        label = Label(self.parent, text=self.label_text)
         options = dropdown_values.fetch(self.field_name)
-        menu = OptionMenu(self.parent, self.value, *options, command=self._on_select)
-        menu.configure(width=10)
+        combo = ttk.Combobox(self.parent, textvariable=self.variable, values=options, state="readonly")
+        combo.set(constants.SELECT_PLACEHOLDER)
+        combo.grid(row=row + 1, column=0, sticky="ew", pady=(0, theme.PAD_SMALL))
+        combo.bind("<<ComboboxSelected>>", self._on_select)
 
-        label.grid(row=self.row, column=self.column + 1, pady=7)
-        menu.grid(row=self.row, column=self.column, pady=5)
-
-    def _on_select(self, _event):
-        selections[self.field_name] = self.value.get()
+    def _on_select(self, _event) -> None:
+        selections[self.field_name] = self.variable.get()

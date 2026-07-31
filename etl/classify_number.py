@@ -1,7 +1,7 @@
 import constants
 
 
-def classify_by_length(number):
+def classify_by_length(number: str) -> str:
     length = len(number)
     if length > 4:
         return constants.SECTION_EXTERNAL

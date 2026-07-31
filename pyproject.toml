@@ -1,0 +1,8 @@
+[project]
+name = "call-center-analytics"
+version = "1.0.0"
+description = "Desktop tool to import, filter, chart, and export call-center records."
+requires-python = ">=3.8"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

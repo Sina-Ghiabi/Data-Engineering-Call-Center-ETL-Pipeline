@@ -1,0 +1,29 @@
+from tkinter import ttk
+
+from ui import dropdowns_frame, theme
+from ui.period_frame import PeriodFrame
+
+
+class FiltersPanel:
+    def __init__(self, window):
+        self.card = ttk.Frame(window, style="Card.TFrame", padding=theme.PAD, width=280)
+        self.card.grid_propagate(False)
+        self.card.columnconfigure(0, weight=1)
+        self.period_frame = PeriodFrame(self.card)
+
+    def build(self) -> ttk.Frame:
+        ttk.Label(self.card, text="Filters", style="CardSection.TLabel").grid(
+            row=0, column=0, sticky="w", pady=(0, theme.PAD_SMALL)
+        )
+        next_row = dropdowns_frame.build(self.card, start_row=1)
+
+        ttk.Label(self.card, text="Time Range", style="CardSection.TLabel").grid(
+            row=next_row, column=0, sticky="w", pady=(theme.PAD, theme.PAD_SMALL)
+        )
+        self.period_frame.build(start_row=next_row + 1)
+
+        return self.card
+
+    @property
+    def entries(self):
+        return self.period_frame.entries

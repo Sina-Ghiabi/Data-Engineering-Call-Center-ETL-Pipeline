@@ -1,8 +1,10 @@
+from typing import Tuple
+
 import constants
 from etl.classify_number import classify_by_length
 
 
-def resolve(number):
+def resolve(number) -> Tuple[str, str]:
     text = str(number)
     try:
         if text.startswith("9") and len(text) > 4:

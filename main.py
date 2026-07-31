@@ -1,17 +1,43 @@
-from ui import buttons_frame, dropdown_widget, dropdowns_frame, treeview_frame
+import logging
+from tkinter import messagebox
+
+import pyodbc
+
+import app_logging
+from database.db_connection import DatabaseConnectionError
+from ui import buttons_frame, dropdown_widget, header, theme, treeview_frame
+from ui.filters_panel import FiltersPanel
 from ui.main_window import window
-from ui.period_frame import PeriodFrame
+from ui.status_bar import StatusBar
+
+logger = logging.getLogger(__name__)
 
 
-def main():
-    dropdowns_frame.build(window)
+def main() -> None:
+    app_logging.configure()
 
-    period_frame = PeriodFrame(window)
-    period_frame.build()
+    header.build(window).grid(row=0, column=0, columnspan=2, sticky="ew")
+
+    try:
+        filters_panel = FiltersPanel(window)
+        filters_panel.build().grid(row=2, column=0, sticky="ns", padx=theme.PAD, pady=(0, theme.PAD))
+    except DatabaseConnectionError as error:
+        logger.error("Startup failed: %s", error)
+        messagebox.showerror("Database Connection Failed", f"Could not connect to the database.\n\n{error}")
+        window.destroy()
+        return
+    except pyodbc.Error as error:
+        logger.exception("Startup failed")
+        messagebox.showerror("Database Error", str(error))
+        window.destroy()
+        return
 
     tree = treeview_frame.build(window)
 
-    buttons_frame.build(window, tree, dropdown_widget.selections, period_frame.entries)
+    status_bar = StatusBar(window)
+    status_bar.frame.grid(row=3, column=0, columnspan=2, sticky="ew")
+
+    buttons_frame.build(window, tree, dropdown_widget.selections, filters_panel.entries, status_bar)
 
     window.mainloop()
 

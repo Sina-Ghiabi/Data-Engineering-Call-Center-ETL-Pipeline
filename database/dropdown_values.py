@@ -13,8 +13,9 @@ def fetch(dropdown_name):
     if dropdown_name not in ALLOWED_DROPDOWNS:
         raise ValueError(f"Unknown dropdown: {dropdown_name}")
 
-    cursor = db_connection.connection.cursor()
+    connection = db_connection.get_connection()
+    cursor = connection.cursor()
     cursor.execute(f"SELECT {dropdown_name} FROM Dropdown_{dropdown_name}")
     rows = cursor.fetchall()
-    db_connection.connection.commit()
+    connection.commit()
     return [" | ".join(row) for row in rows]

@@ -1,22 +1,18 @@
-from tkinter import Frame
-
 from ui.dropdown_widget import Dropdown
 
 DROPDOWN_SPECS = (
-    ("Caller Section:", "IO_Caller_Section", 0),
-    ("Caller Channel Code:", "Caller_Channel_Code", 1),
-    ("Called Section:", "IO_Called_Section", 2),
-    ("Called Channel Code:", "Called_Channel_Code", 3),
-    ("Status:", "Status", 4),
+    ("Caller Section", "IO_Caller_Section"),
+    ("Caller Channel Code", "Caller_Channel_Code"),
+    ("Called Section", "IO_Called_Section"),
+    ("Called Channel Code", "Called_Channel_Code"),
+    ("Status", "Status"),
 )
 
 
-def build(window):
-    frame = Frame(window, width=150, height=100, relief="raised")
-    frame.place(width=200, height=200, x=720, y=10)
-
-    for label_text, field_name, row in DROPDOWN_SPECS:
-        dropdown = Dropdown(frame, label_text, field_name, row, 0)
-        dropdown.create()
-
-    return frame
+def build(parent, start_row: int) -> int:
+    row = start_row
+    for label_text, field_name in DROPDOWN_SPECS:
+        dropdown = Dropdown(parent, label_text, field_name)
+        dropdown.create(row)
+        row += 2
+    return row

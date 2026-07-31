@@ -27,7 +27,8 @@ def load_file(path, progress_callback=None):
     with open(path, encoding="utf-8") as handle:
         lines = [line for line in handle if line.strip() and not line.startswith("#")]
 
-    cursor = db_connection.connection.cursor()
+    connection = db_connection.get_connection()
+    cursor = connection.cursor()
     total = len(lines)
     batch = []
 
@@ -39,14 +40,14 @@ def load_file(path, progress_callback=None):
 
         if len(batch) >= BATCH_SIZE:
             cursor.executemany(INSERT_SQL, batch)
-            db_connection.connection.commit()
+            connection.commit()
             batch.clear()
             if progress_callback:
                 progress_callback(index, total)
 
     if batch:
         cursor.executemany(INSERT_SQL, batch)
-        db_connection.connection.commit()
+        connection.commit()
 
     cursor.execute(REMOVE_DUPLICATES_SQL)
-    db_connection.connection.commit()
+    connection.commit()

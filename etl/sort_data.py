@@ -39,7 +39,8 @@ def _split_channel(channel):
 
 
 def transform(progress_callback=None):
-    cursor = db_connection.connection.cursor()
+    connection = db_connection.get_connection()
+    cursor = connection.cursor()
     cursor.execute("SELECT * FROM Unique_Info")
     rows = cursor.fetchall()
     total = len(rows)
@@ -61,14 +62,14 @@ def transform(progress_callback=None):
 
         if len(batch) >= BATCH_SIZE:
             cursor.executemany(INSERT_SQL, batch)
-            db_connection.connection.commit()
+            connection.commit()
             batch.clear()
             if progress_callback:
                 progress_callback(index, total)
 
     if batch:
         cursor.executemany(INSERT_SQL, batch)
-        db_connection.connection.commit()
+        connection.commit()
 
     cursor.execute(REMOVE_DUPLICATES_SQL)
-    db_connection.connection.commit()
+    connection.commit()

@@ -1,4 +1,7 @@
-def split(date_and_time):
+from typing import Tuple
+
+
+def split(date_and_time: str) -> Tuple[str, str, str, str, str]:
     try:
         date_part, time_part = date_and_time.split(" ", 1)
         year, month, day = date_part.split("/")

@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 *.xlsx
+logs/
+.pytest_cache/
+*.egg-info/
