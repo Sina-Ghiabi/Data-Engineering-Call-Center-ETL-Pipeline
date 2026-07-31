@@ -26,6 +26,35 @@ FONT_TREE_HEADING = (FONT_FAMILY, 9, "bold")
 PAD = 12
 PAD_SMALL = 6
 
+# Chart chrome/ink — kept close to the app surfaces so charts read as part of
+# the same UI, not a pasted-in matplotlib default.
+CHART_SURFACE = COLOR_SURFACE
+CHART_GRID = COLOR_BORDER
+CHART_INK = COLOR_TEXT_PRIMARY
+CHART_MUTED = COLOR_TEXT_SECONDARY
+
+# Fixed-order categorical palette (validated for CVD-safe adjacent contrast).
+# Assign by entity identity, in this order — never re-sort by value/rank.
+CHART_CATEGORICAL = [
+    "#2a78d6",  # 1 blue
+    "#eb6834",  # 2 orange
+    "#1baf7a",  # 3 aqua
+    "#eda100",  # 4 yellow
+    "#e87ba4",  # 5 magenta
+    "#008300",  # 6 green
+    "#4a3aa7",  # 7 violet
+    "#e34948",  # 8 red
+]
+
+# Reserved for genuine call outcomes (good/warning/serious/critical) — never
+# reused as a generic categorical series color.
+CHART_STATUS = {
+    "good": "#0ca30c",
+    "warning": "#fab219",
+    "serious": "#ec835a",
+    "critical": "#d03b3b",
+}
+
 
 def apply(window) -> ttk.Style:
     window.configure(background=COLOR_BACKGROUND)

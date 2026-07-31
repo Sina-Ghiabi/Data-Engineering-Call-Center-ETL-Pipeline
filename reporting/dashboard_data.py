@@ -7,6 +7,12 @@ from reporting.duration import to_seconds
 ChartData = Tuple[List[str], List[float]]
 
 
+def total_calls() -> int:
+    cursor = db_connection.get_connection().cursor()
+    cursor.execute("SELECT COUNT(*) FROM Separated_Info")
+    return cursor.fetchone()[0]
+
+
 def status_breakdown() -> ChartData:
     cursor = db_connection.get_connection().cursor()
     cursor.execute(
