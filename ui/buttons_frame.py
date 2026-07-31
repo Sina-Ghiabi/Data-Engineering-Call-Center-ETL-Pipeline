@@ -54,7 +54,7 @@ def _import_file(tree, status_bar) -> None:
     _run_safely(status_bar, "Import", action)
 
 
-def _generate_report(tree, dropdown_selections, period_entries, status_bar) -> None:
+def generate_report(tree, dropdown_selections, period_entries, status_bar) -> None:
     def action():
         search_button.search(tree, dropdown_selections, period_entries, status_bar)
 
@@ -69,18 +69,13 @@ def _export(tree, status_bar) -> None:
     _run_safely(status_bar, "Export", action)
 
 
-def build(window, tree, dropdown_selections, period_entries, status_bar) -> ttk.Frame:
+def build(window, tree, status_bar) -> ttk.Frame:
     toolbar = ttk.Frame(window, style="Toolbar.TFrame", padding=(theme.PAD, 0, theme.PAD, theme.PAD_SMALL))
     toolbar.grid(row=1, column=0, columnspan=2, sticky="ew")
 
     ttk.Button(
         toolbar, text="Select File...", style="Secondary.TButton",
         command=lambda: _import_file(tree, status_bar),
-    ).pack(side="left", padx=(0, theme.PAD_SMALL))
-
-    ttk.Button(
-        toolbar, text="Generate Report", style="Accent.TButton",
-        command=lambda: _generate_report(tree, dropdown_selections, period_entries, status_bar),
     ).pack(side="left", padx=(0, theme.PAD_SMALL))
 
     ttk.Button(

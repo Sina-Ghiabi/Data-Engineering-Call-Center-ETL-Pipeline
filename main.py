@@ -37,7 +37,10 @@ def main() -> None:
     status_bar = StatusBar(window)
     status_bar.frame.grid(row=3, column=0, columnspan=2, sticky="ew")
 
-    buttons_frame.build(window, tree, dropdown_widget.selections, filters_panel.entries, status_bar)
+    buttons_frame.build(window, tree, status_bar)
+    filters_panel.add_filter_button(
+        lambda: buttons_frame.generate_report(tree, dropdown_widget.selections, filters_panel.entries, status_bar)
+    )
 
     window.mainloop()
 
