@@ -24,6 +24,27 @@ python main.py
 An ODBC driver for SQL Server must be installed separately (this is a system-level
 driver, not a Python package).
 
+## Database setup
+
+The app expects a SQL Server database with the tables it reads from and writes to.
+If you're starting from scratch (fresh SQL Server install, empty instance):
+
+```
+sqlcmd -S <server\instance> -i sql\schema.sql
+```
+
+This creates the `Users` database (if missing), `Unique_Info`, `Separated_Info`,
+and the five `Dropdown_*` lookup tables, seeded with the section/status values the
+app expects (`All`, `External`, `Brokerage`, `Box`, `Invalid`, plus the status
+values). The channel-code dropdowns start with just `All`, since real channel codes
+come from imported call data, not a fixed list — after your first import, run:
+
+```
+sqlcmd -S <server\instance> -i sql\refresh_channel_dropdowns.sql
+```
+
+to populate them from whatever codes actually showed up in `Separated_Info`.
+
 ## Configuration
 
 Connection settings are read from environment variables, with sensible local defaults:
