@@ -45,6 +45,16 @@ sqlcmd -S <server\instance> -i sql\refresh_channel_dropdowns.sql
 
 to populate them from whatever codes actually showed up in `Separated_Info`.
 
+## Data validation
+
+Every row parsed from an imported `.txt` file is checked by `etl/record_validator.py`
+before it reaches the database: field count, a plausible date/time, numeric caller
+and called numbers, non-empty channels, duration-shaped ring/talk times, and a
+non-empty status. Rows that fail are skipped (not inserted) and written to
+`logs/rejected_rows.csv` with the line number and the reason, instead of silently
+disappearing. The import summary in the status bar reports how many rows were
+imported vs. rejected.
+
 ## Configuration
 
 Connection settings are read from environment variables, with sensible local defaults:
@@ -67,7 +77,8 @@ pytest
 ```
 
 The test suite covers only the pure-logic modules (number classification, datetime
-splitting, query building) — nothing that touches a live database or the GUI.
+splitting, query building, record validation) — nothing that touches a live
+database or the GUI.
 
 ## Known limitations
 

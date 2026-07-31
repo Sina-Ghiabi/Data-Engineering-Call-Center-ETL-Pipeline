@@ -37,12 +37,19 @@ def _import_file(tree, status_bar) -> None:
         tree.delete(*tree.get_children())
 
         status_bar.start_progress("Reading data...")
-        insert_data.load_file(path, progress_callback=status_bar.update_progress)
+        result = insert_data.load_file(path, progress_callback=status_bar.update_progress)
 
         status_bar.start_progress("Processing data...")
         sort_data.transform(progress_callback=status_bar.update_progress)
 
-        status_bar.finish_progress("Import completed successfully.")
+        if result.rejected:
+            status_bar.finish_progress(
+                f"Imported {result.imported} record(s), rejected {result.rejected} "
+                f"(see {result.rejected_path}).",
+                kind="error",
+            )
+        else:
+            status_bar.finish_progress(f"Imported {result.imported} record(s) successfully.")
 
     _run_safely(status_bar, "Import", action)
 
