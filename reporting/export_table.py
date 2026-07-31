@@ -99,3 +99,17 @@ def export_rows(
 
     connection.commit()
     return ExportResult(table_name=full_name, batch_id=batch_id, row_count=len(rows))
+
+
+def delete_table(raw_name: str) -> None:
+    full_name = full_table_name(raw_name)
+    connection = db_connection.get_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(f"IF OBJECT_ID('dbo.{full_name}', 'U') IS NOT NULL DROP TABLE dbo.{full_name}")
+    cursor.execute(
+        f"IF OBJECT_ID('dbo.{BATCHES_TABLE_NAME}', 'U') IS NOT NULL "
+        f"DELETE FROM dbo.{BATCHES_TABLE_NAME} WHERE TableName = ?",
+        (full_name,),
+    )
+    connection.commit()

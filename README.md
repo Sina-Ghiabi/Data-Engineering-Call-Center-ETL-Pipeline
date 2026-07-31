@@ -86,6 +86,11 @@ batch/lineage-tracking pattern instead of a plain data dump:
   or re-derive that later.
 - Exporting an empty results table is rejected with a status-bar message rather
   than silently creating an empty table.
+- The same dialog has a "Delete" button for removing a table you picked from
+  the list — it asks for confirmation first, then drops the table and removes
+  its rows from `Export_Batches`. This only works on tables already in the
+  list (i.e. `Export_*` tables created this way); it can't target arbitrary
+  tables by typing a name.
 
 ## Dashboard
 
