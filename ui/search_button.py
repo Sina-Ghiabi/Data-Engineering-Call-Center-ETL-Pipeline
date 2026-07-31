@@ -9,10 +9,8 @@ def _period_values(period_entries):
     }
 
 
-def search(tree, dropdown_selections, period_entries, status_bar) -> None:
+def _populate_tree(tree, query, params) -> int:
     tree.delete(*tree.get_children())
-
-    query, params = build_search_query(dropdown_selections, _period_values(period_entries))
 
     connection = db_connection.get_connection()
     cursor = connection.cursor()
@@ -24,5 +22,15 @@ def search(tree, dropdown_selections, period_entries, status_bar) -> None:
         tag = "even" if index % 2 == 0 else "odd"
         tree.insert("", "end", values=tuple(row[1:]), tags=(tag,))
 
+    return len(rows)
+
+
+def search(tree, dropdown_selections, period_entries, status_bar) -> None:
+    query, params = build_search_query(dropdown_selections, _period_values(period_entries))
+    count = _populate_tree(tree, query, params)
     dropdown_selections.clear()
-    status_bar.finish_progress(f"Report generated successfully — {len(rows)} record(s) found.")
+    status_bar.finish_progress(f"Report generated successfully — {count} record(s) found.")
+
+
+def load_all(tree) -> int:
+    return _populate_tree(tree, "SELECT * FROM Separated_Info", [])

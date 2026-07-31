@@ -42,6 +42,8 @@ def _import_file(tree, status_bar) -> None:
         status_bar.start_progress("Processing data...")
         sort_data.transform(progress_callback=status_bar.update_progress)
 
+        search_button.load_all(tree)
+
         if result.rejected:
             status_bar.finish_progress(
                 f"Imported {result.imported} record(s), rejected {result.rejected} "
