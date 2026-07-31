@@ -1,6 +1,6 @@
 from tkinter import Tk
 
-import config
+from database import config
 
 window = Tk()
 window.geometry(config.WINDOW_SIZE)

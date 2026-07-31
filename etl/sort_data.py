@@ -1,7 +1,5 @@
-import called_number
-import caller_number
-import datetime_splitter
-import db_connection
+from database import db_connection
+from etl import called_number, caller_number, datetime_splitter
 
 BATCH_SIZE = 100
 

@@ -1,5 +1,5 @@
 import constants
-from classify_number import classify_by_length
+from etl.classify_number import classify_by_length
 
 
 def resolve(number):

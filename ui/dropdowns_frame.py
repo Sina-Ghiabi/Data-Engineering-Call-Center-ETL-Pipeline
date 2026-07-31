@@ -1,6 +1,6 @@
 from tkinter import Frame
 
-from dropdown_widget import Dropdown
+from ui.dropdown_widget import Dropdown
 
 DROPDOWN_SPECS = (
     ("Caller Section:", "IO_Caller_Section", 0),

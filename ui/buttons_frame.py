@@ -1,11 +1,9 @@
 from tkinter import Button, Frame, filedialog
 
-import charts
-import export_excel
-import insert_data
-import search_button
-import sort_data
-from progress_bar import ProgressBar
+from etl import insert_data, sort_data
+from reporting import charts, export_excel
+from ui import search_button
+from ui.progress_bar import ProgressBar
 
 
 def _choose_file(window, tree):

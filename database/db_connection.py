@@ -1,6 +1,6 @@
 import pyodbc
 
-import config
+from database import config
 
 
 def connect():

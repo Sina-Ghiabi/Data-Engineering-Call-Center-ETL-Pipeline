@@ -1,8 +1,6 @@
 from tkinter import Entry, Frame, Label, StringVar
 
-import date_format
-import time_format
-import timer_format
+from ui import date_format, time_format, timer_format
 
 FIELD_SPECS = (
     ("ring_time", "Ring time from:", "0:00", timer_format.format_timer_entry),

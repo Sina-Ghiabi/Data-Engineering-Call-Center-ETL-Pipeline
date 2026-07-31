@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-import db_connection
+from database import db_connection
 
 
 class PieChart:

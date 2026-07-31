@@ -1,9 +1,6 @@
-import buttons_frame
-import dropdown_widget
-import dropdowns_frame
-import treeview_frame
-from main_window import window
-from period_frame import PeriodFrame
+from ui import buttons_frame, dropdown_widget, dropdowns_frame, treeview_frame
+from ui.main_window import window
+from ui.period_frame import PeriodFrame
 
 
 def main():

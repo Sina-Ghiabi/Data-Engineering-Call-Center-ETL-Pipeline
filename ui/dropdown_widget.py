@@ -1,7 +1,7 @@
 from tkinter import Label, OptionMenu, StringVar
 
 import constants
-import dropdown_values
+from database import dropdown_values
 
 selections = {}
 

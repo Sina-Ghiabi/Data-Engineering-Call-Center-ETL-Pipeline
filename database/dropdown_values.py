@@ -1,4 +1,4 @@
-import db_connection
+from database import db_connection
 
 ALLOWED_DROPDOWNS = {
     "IO_Caller_Section",

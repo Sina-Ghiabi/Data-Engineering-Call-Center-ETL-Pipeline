@@ -1,4 +1,4 @@
-import db_connection
+from database import db_connection
 
 BATCH_SIZE = 100
 

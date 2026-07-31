@@ -1,7 +1,7 @@
 from tkinter import Label
 
 import constants
-import db_connection
+from database import db_connection
 
 DROPDOWN_COLUMNS = {
     "IO_Caller_Section": "IO_Caller_Number_Section",

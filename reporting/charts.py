@@ -1,4 +1,4 @@
-from pie_chart import PieChart
+from reporting.pie_chart import PieChart
 
 
 def _show_all(number):
