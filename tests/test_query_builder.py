@@ -1,5 +1,5 @@
 from core import constants
-from ui.query_builder import build_search_query
+from ui.query_builder import build_search_query, describe_filters
 
 
 def test_no_filters_returns_unfiltered_query():
@@ -44,3 +44,18 @@ def test_combines_dropdown_and_period_filters():
     )
     assert query == "SELECT * FROM Separated_Info WHERE Status = ? AND ? <= Ring_Time AND Ring_Time <= ?"
     assert params == ["answered", "0:05", "1:00"]
+
+
+def test_describe_filters_with_no_filters():
+    assert describe_filters({}, {}) == "No filter (all records)"
+
+
+def test_describe_filters_ignores_select_all():
+    assert describe_filters({"Status": constants.SELECT_ALL_LABEL}, {}) == "No filter (all records)"
+
+
+def test_describe_filters_reports_dropdown_and_range():
+    description = describe_filters(
+        {"Status": "answered"}, {"date": ("1402/01/01", "1402/06/01")}
+    )
+    assert description == "Status = answered; 1402/01/01 <= Date <= 1402/06/01"

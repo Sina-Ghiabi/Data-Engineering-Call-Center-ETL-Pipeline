@@ -9,7 +9,7 @@ classify and enrich them, then filter, browse, chart, and export the results.
 core/         shared constants and logging setup — no dependency on any other package
 database/     config, DB connection, dropdown lookups
 etl/          extract/transform/load pipeline (file import, validation, classification, dedup)
-reporting/    Excel export, the analytics dashboard (aggregate queries + charts)
+reporting/    export-to-table (batch-tracked), the analytics dashboard (aggregate queries + charts)
 ui/           window, theme, frames, formatters
 tests/        pytest unit tests for the pure-logic modules
 scripts/      one-off developer scripts (e.g. sample data generation)
@@ -62,6 +62,30 @@ non-empty status. Rows that fail are skipped (not inserted) and written to
 `logs/rejected_rows.csv` with the line number and the reason, instead of silently
 disappearing. The import summary in the status bar reports how many rows were
 imported vs. rejected.
+
+## Export to Table
+
+The "Export to Table" button saves whatever is currently in the results table
+(filtered or not) into a SQL Server table you pick or create — a small
+batch/lineage-tracking pattern instead of a plain data dump:
+
+- A dialog lists existing export tables (anything already created this way) in a
+  combobox you can also type a new name into. Table names are sanitized (letters,
+  digits, underscores only) and always created under the `Export_` prefix, e.g.
+  choosing "MonthlyReport" creates/reuses `Export_MonthlyReport` — this keeps
+  every export discoverable via `SELECT name FROM sys.tables WHERE name LIKE
+  'Export_%'` and out of the way of the app's own tables.
+- Every export also inserts one row into a shared `Export_Batches` table
+  (`BatchID`, `TableName`, `ExportedAt`, `FilterCriteria`, `RecordCount`), and every
+  row written to the target table carries that `ExportBatchID` as a foreign key.
+  `FilterCriteria` records whatever was actually applied (e.g. `Status =
+  answered; 1402/01/01 <= Date <= 1402/06/01`, or `No filter (all records)`),
+  computed in `ui/query_builder.describe_filters` from the same inputs that
+  built the query — so every export is traceable back to *when* it was made,
+  *what was in it*, and *what filter produced it*, without needing to remember
+  or re-derive that later.
+- Exporting an empty results table is rejected with a status-bar message rather
+  than silently creating an empty table.
 
 ## Dashboard
 

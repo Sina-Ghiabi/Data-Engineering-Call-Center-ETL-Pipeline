@@ -44,3 +44,23 @@ def build_search_query(dropdown_selections: Dict[str, str], period_values: Dict[
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
     return query, params
+
+
+def describe_filters(dropdown_selections: Dict[str, str], period_values: Dict[str, Tuple[str, str]]) -> str:
+    parts = []
+
+    for field_name, column_name in DROPDOWN_COLUMNS.items():
+        value = dropdown_selections.get(field_name)
+        if value and value != constants.SELECT_ALL_LABEL:
+            parts.append(f"{column_name} = {value}")
+
+    for field_name, column_name in PERIOD_COLUMNS:
+        value_from, value_to = period_values.get(field_name, ("", ""))
+        if value_from and value_to:
+            parts.append(f"{value_from} <= {column_name} <= {value_to}")
+        elif value_from:
+            parts.append(f"{column_name} >= {value_from}")
+        elif value_to:
+            parts.append(f"{column_name} <= {value_to}")
+
+    return "; ".join(parts) if parts else "No filter (all records)"

@@ -5,9 +5,10 @@ import pyodbc
 
 from database.db_connection import DatabaseConnectionError
 from etl import insert_data, sort_data
-from reporting import export_excel
+from reporting import export_table
 from reporting.dashboard_window import open_dashboard
 from ui import search_button, theme
+from ui.export_table_dialog import ask_table_name
 
 logger = logging.getLogger(__name__)
 
@@ -64,10 +65,25 @@ def generate_report(tree, dropdown_selections, period_entries, status_bar) -> No
     _run_safely(status_bar, "Report generation", action)
 
 
-def _export(tree, status_bar) -> None:
+def _export_to_table(window, tree, status_bar) -> None:
     def action():
-        export_excel.export(tree)
-        status_bar.finish_progress(f"Exported to {export_excel.OUTPUT_FILE}")
+        rows = [tree.item(item)["values"] for item in tree.get_children()]
+        if not rows:
+            status_bar.finish_progress("Nothing to export — the results table is empty.", kind="error")
+            return
+
+        existing_tables = export_table.list_export_tables()
+        name = ask_table_name(window, existing_tables)
+        if not name:
+            status_bar.finish_progress("Export canceled.")
+            return
+
+        columns = tree["columns"]
+        filter_criteria = search_button.get_last_description()
+        result = export_table.export_rows(name, columns, rows, filter_criteria)
+        status_bar.finish_progress(
+            f"Exported {result.row_count} row(s) to {result.table_name} (batch #{result.batch_id})."
+        )
 
     _run_safely(status_bar, "Export", action)
 
@@ -86,8 +102,8 @@ def build(window, tree, status_bar) -> ttk.Frame:
     ).pack(side="left", padx=(0, theme.PAD_SMALL))
 
     ttk.Button(
-        toolbar, text="Export to Excel", style="Secondary.TButton",
-        command=lambda: _export(tree, status_bar),
+        toolbar, text="Export to Table", style="Secondary.TButton",
+        command=lambda: _export_to_table(window, tree, status_bar),
     ).pack(side="left", padx=(0, theme.PAD_SMALL))
 
     ttk.Button(

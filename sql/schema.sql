@@ -128,3 +128,18 @@ BEGIN
     INSERT INTO dbo.Dropdown_Called_Channel_Code (Called_Channel_Code) VALUES ('All');
 END
 GO
+
+-- Batch/lineage metadata for "Export to Table". One row per export click;
+-- the app also creates this table lazily on first export, so running this
+-- script is optional, not required, for that feature to work.
+IF OBJECT_ID('dbo.Export_Batches', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Export_Batches (
+        BatchID INT IDENTITY(1,1) PRIMARY KEY,
+        TableName NVARCHAR(128) NOT NULL,
+        ExportedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        FilterCriteria NVARCHAR(MAX) NOT NULL,
+        RecordCount INT NOT NULL
+    );
+END
+GO

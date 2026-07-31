@@ -1,5 +1,7 @@
 from database import db_connection
-from ui.query_builder import build_search_query
+from ui.query_builder import build_search_query, describe_filters
+
+_last_description = "No data"
 
 
 def _period_values(period_entries):
@@ -25,12 +27,23 @@ def _populate_tree(tree, query, params) -> int:
     return len(rows)
 
 
+def get_last_description() -> str:
+    return _last_description
+
+
 def search(tree, dropdown_selections, period_entries, status_bar) -> None:
-    query, params = build_search_query(dropdown_selections, _period_values(period_entries))
+    global _last_description
+
+    period_values = _period_values(period_entries)
+    query, params = build_search_query(dropdown_selections, period_values)
+    _last_description = describe_filters(dropdown_selections, period_values)
+
     count = _populate_tree(tree, query, params)
     dropdown_selections.clear()
     status_bar.finish_progress(f"Report generated successfully — {count} record(s) found.")
 
 
 def load_all(tree) -> int:
+    global _last_description
+    _last_description = "No filter (all records)"
     return _populate_tree(tree, "SELECT * FROM Separated_Info", [])

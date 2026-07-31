@@ -1,4 +1,3 @@
 pyodbc
 keyboard
-xlsxwriter
 matplotlib
