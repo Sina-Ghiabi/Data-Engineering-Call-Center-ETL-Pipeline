@@ -3,7 +3,7 @@ from tkinter import messagebox
 
 import pyodbc
 
-import app_logging
+from core import logging_config
 from database.db_connection import DatabaseConnectionError
 from ui import buttons_frame, dropdown_widget, header, theme, treeview_frame
 from ui.filters_panel import FiltersPanel
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    app_logging.configure()
+    logging_config.configure()
 
     header.build(window).grid(row=0, column=0, columnspan=2, sticky="ew")
 

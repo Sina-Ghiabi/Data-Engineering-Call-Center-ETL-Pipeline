@@ -1,4 +1,4 @@
-import constants
+from core import constants
 
 
 def classify_by_length(number: str) -> str:

@@ -2,7 +2,8 @@ import logging
 import logging.handlers
 import os
 
-LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
+LOG_DIR = os.path.join(PROJECT_ROOT, "logs")
 LOG_FILE = os.path.join(LOG_DIR, "app.log")
 
 

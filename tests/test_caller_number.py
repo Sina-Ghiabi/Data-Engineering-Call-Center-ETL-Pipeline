@@ -1,4 +1,4 @@
-import constants
+from core import constants
 from etl.caller_number import resolve
 
 

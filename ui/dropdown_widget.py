@@ -1,6 +1,6 @@
 from tkinter import StringVar, ttk
 
-import constants
+from core import constants
 from database import dropdown_values
 from ui import theme
 

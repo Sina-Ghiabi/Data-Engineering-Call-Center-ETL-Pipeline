@@ -1,4 +1,4 @@
-import constants
+from core import constants
 from ui.query_builder import build_search_query
 
 

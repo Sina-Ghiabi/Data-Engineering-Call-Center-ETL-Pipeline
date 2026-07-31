@@ -1,6 +1,6 @@
 from typing import Dict, List, Tuple
 
-import constants
+from core import constants
 
 DROPDOWN_COLUMNS = {
     "IO_Caller_Section": "IO_Caller_Number_Section",

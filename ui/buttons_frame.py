@@ -5,7 +5,8 @@ import pyodbc
 
 from database.db_connection import DatabaseConnectionError
 from etl import insert_data, sort_data
-from reporting import charts, export_excel
+from reporting import export_excel
+from reporting.dashboard_window import open_dashboard
 from ui import search_button, theme
 
 logger = logging.getLogger(__name__)
@@ -71,6 +72,10 @@ def _export(tree, status_bar) -> None:
     _run_safely(status_bar, "Export", action)
 
 
+def _open_dashboard(window, status_bar) -> None:
+    _run_safely(status_bar, "Dashboard", lambda: open_dashboard(window))
+
+
 def build(window, tree, status_bar) -> ttk.Frame:
     toolbar = ttk.Frame(window, style="Toolbar.TFrame", padding=(theme.PAD, 0, theme.PAD, theme.PAD_SMALL))
     toolbar.grid(row=1, column=0, columnspan=2, sticky="ew")
@@ -85,9 +90,9 @@ def build(window, tree, status_bar) -> ttk.Frame:
         command=lambda: _export(tree, status_bar),
     ).pack(side="left", padx=(0, theme.PAD_SMALL))
 
-    # Disabled until the UI offers a way to pick a caller/called number to chart.
     ttk.Button(
-        toolbar, text="Show Details", style="Secondary.TButton", state="disabled", command=charts.show_details
+        toolbar, text="Dashboard", style="Secondary.TButton",
+        command=lambda: _open_dashboard(window, status_bar),
     ).pack(side="left")
 
     return toolbar

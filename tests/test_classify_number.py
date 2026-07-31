@@ -1,4 +1,4 @@
-import constants
+from core import constants
 from etl.classify_number import classify_by_length
 
 

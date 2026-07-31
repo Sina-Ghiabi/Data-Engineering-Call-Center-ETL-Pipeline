@@ -6,13 +6,21 @@ classify and enrich them, then filter, browse, chart, and export the results.
 ## Project layout
 
 ```
-database/   config, DB connection, dropdown lookups
-etl/        extract/transform/load pipeline (file import, classification, dedup)
-reporting/  Excel export, pie charts
-ui/         window, theme, frames, formatters
-tests/      pytest unit tests for the pure-logic modules
-main.py     entry point
+core/         shared constants and logging setup — no dependency on any other package
+database/     config, DB connection, dropdown lookups
+etl/          extract/transform/load pipeline (file import, validation, classification, dedup)
+reporting/    Excel export, the analytics dashboard (aggregate queries + charts)
+ui/           window, theme, frames, formatters
+tests/        pytest unit tests for the pure-logic modules
+scripts/      one-off developer scripts (e.g. sample data generation)
+sql/          schema and seed scripts, run with sqlcmd
+sample_data/  a ready-to-import sample call file for manual testing
+logs/         rotating app log + rejected_rows.csv (created at runtime, not tracked in git)
+main.py       entry point
 ```
+
+`core` has no imports from `database`/`etl`/`reporting`/`ui`, so it can be imported
+from anywhere without pulling in tkinter, pyodbc, or matplotlib.
 
 ## Setup
 
@@ -55,6 +63,19 @@ non-empty status. Rows that fail are skipped (not inserted) and written to
 disappearing. The import summary in the status bar reports how many rows were
 imported vs. rejected.
 
+## Dashboard
+
+The "Dashboard" button opens a window with five charts computed straight from
+`Separated_Info` (`reporting/dashboard_data.py` runs one aggregate SQL query per
+chart; `reporting/dashboard_window.py` renders them with matplotlib embedded in
+the window, not separate popups):
+
+1. **Call Status Breakdown** — answered / busy / no-answer / failed, as a share of all calls.
+2. **Call Origin Mix** — External / Brokerage / Box, by caller section.
+3. **Call Volume by Month** — call counts per Year-Month, for spotting trends.
+4. **Average Talk Time by Origin** — mean handle time (answered calls only), a core efficiency metric.
+5. **Top 10 Busiest Channels** — which trunks/channels carry the most traffic.
+
 ## Configuration
 
 Connection settings are read from environment variables, with sensible local defaults:
@@ -82,10 +103,8 @@ database or the GUI.
 
 ## Known limitations
 
-- The section/status constants in `constants.py` (`External`, `Brokerage`, `Box`,
-  `Invalid`, `All`) are English, but a database that was populated by an earlier,
-  Persian-language version of this app will still contain the old Persian values in
-  `Dropdown_*`, `Unique_Info`, and `Separated_Info`. Filtering will not match existing
-  rows until the database is migrated to the new values.
-- The "Show Details" button stays disabled: there is no input field yet for the
-  caller/called number that `reporting/charts.py` needs to draw its pie charts.
+- The section/status constants in `core/constants.py` (`External`, `Brokerage`,
+  `Box`, `Invalid`, `All`) are English, but a database that was populated by an
+  earlier, Persian-language version of this app will still contain the old Persian
+  values in `Dropdown_*`, `Unique_Info`, and `Separated_Info`. Filtering will not
+  match existing rows until the database is migrated to the new values.
