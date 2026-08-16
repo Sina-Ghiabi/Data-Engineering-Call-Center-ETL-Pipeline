@@ -15,16 +15,19 @@
 
 <br>
 
-> **TL;DR** — A telephone switch produces a raw call-detail-record (CDR)
-> text file; this app imports it into SQL Server, validates and enriches
-> every row, then lets you filter, browse, chart, and export the result —
-> a small, self-contained **extract → validate → transform → load → serve**
-> pipeline wrapped in a desktop UI. It started life in 2020 as an
-> unfinished, Persian-language, string-concatenated-SQL prototype with
-> several dead features. This repo is the reworked version: parameterized
-> queries, real input validation with a rejection log, a tested ETL core,
-> a working analytics dashboard, and a batch-tracked "Export to Table"
-> pattern instead of a plain data dump.
+> **TL;DR** — A phone system produces raw call-log files that need to
+> become something people can actually search, filter, and learn from.
+> This app imports those files into SQL Server, validates every row
+> before it's stored, then lets staff browse, chart, and export the
+> data — a small, self-contained pipeline wrapped in a desktop app.
+>
+> It started life in 2020 as an unfinished internal tool: written in
+> Persian, vulnerable to SQL injection, with several features that looked
+> complete but silently didn't work (one bug alone caused every export to
+> permanently drop its first row). This repo is a full rework — safe
+> parameterized queries, real input validation with a rejection log,
+> automated tests, a working analytics dashboard, and a batch-tracked
+> export system that records exactly what was exported and when.
 
 <br>
 
