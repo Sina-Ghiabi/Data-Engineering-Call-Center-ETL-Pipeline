@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📞 Call Center Data Engineering
+# 📞 Data Engineering — Building a Small-Scale ETL Pipeline for Call-Center Records
 
 ### A desktop CDR pipeline — extract, validate, transform, load, and serve call-detail-records through a resilient Tkinter UI
 
