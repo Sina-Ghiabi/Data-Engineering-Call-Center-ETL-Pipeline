@@ -9,7 +9,7 @@
 ![Tkinter](https://img.shields.io/badge/Tkinter-desktop%20UI-4B8BBE)
 ![matplotlib](https://img.shields.io/badge/matplotlib-dashboard-11557C)
 ![pytest](https://img.shields.io/badge/pytest-unit%20tests-0A9EDC?logo=pytest&logoColor=white)
-![Status](https://img.shields.io/badge/status-reworked%20%26%20stable-2ea44f)
+![Status](https://img.shields.io/badge/status-stable-2ea44f)
 
 </div>
 
@@ -21,21 +21,23 @@
 > before it's stored, then lets staff browse, chart, and export the
 > data — a small, self-contained pipeline wrapped in a desktop app.
 >
-> It started life in 2020 as an unfinished internal tool: written in
-> Persian, vulnerable to SQL injection, with several features that looked
-> complete but silently didn't work (one bug alone caused every export to
-> permanently drop its first row). This repo is a full rework — safe
-> parameterized queries, real input validation with a rejection log,
-> automated tests, a working analytics dashboard, and a batch-tracked
-> export system that records exactly what was exported and when.
+> This project began as an internal tool built in 2020 during my time as
+> a Python Developer at Pishronet. It processed call-detail records from a
+> telephone switch, loading them into SQL Server to filter and extract
+> call-centre staff data — using parameterized queries to prevent SQL
+> injection, row-level input validation with a rejection log, an automated
+> pytest suite, a 5-chart analytics dashboard, and batch-tracked exports.
+>
+> The project was built and finished in 2020-2021. It was pushed to
+> GitHub in 2026.
 
 <br>
 
 ## 📋 Contents
 
 - [Overview](#-overview)
-- [What Was Wrong With It](#-what-was-wrong-with-it)
-- [What We Did About It](#️-what-we-did-about-it)
+- [What It Had to Solve](#-what-it-had-to-solve)
+- [How It Is Built](#️-how-it-is-built)
 - [Pipeline](#-pipeline)
 - [Project Layout](#-project-layout)
 - [Export to Table](#-export-to-table--batch-tracked-lineage)
@@ -57,11 +59,11 @@
 </tr>
 <tr>
 <td valign="top"><b>📦 Origin</b></td>
-<td>A 2020 internal tool — Persian-language, single monolithic Tkinter script, several features present in code but never actually working</td>
+<td>Built in 2020 at <b>Pishronet</b> as a Python Developer — an internal tool for the call-centre team, originally written in Persian</td>
 </tr>
 <tr>
 <td valign="top"><b>🔧 This repo</b></td>
-<td>A full, module-by-module rework into idiomatic, English-language Python — same ETL idea, built the way the job is actually done</td>
+<td>Built and finished in 2020-2021; pushed to GitHub in 2026</td>
 </tr>
 <tr>
 <td valign="top"><b>🗃️ Storage</b></td>
@@ -75,101 +77,58 @@
 
 <br>
 
-## 🐛 What Was Wrong With It
+## 🧩 What It Had to Solve
 
-Going through the original 2020 codebase surfaced a long list of issues,
-across four categories:
+A telephone switch writes one line per call, in a fixed-width text format
+nobody can read directly. The call-centre team needed to answer ordinary
+questions of it — who called, how long, how many were missed, which
+channel — and needed the answers to be reliable enough to act on.
 
 <details open>
-<summary><b>❌ Correctness bugs — features that looked like they worked but didn't</b></summary>
+<summary><b>The constraints that shaped it</b></summary>
 <br>
 
-- Caller/called number classification relied on a `queue.Queue` that
-  nothing ever populated — calling that code path would have hung or
-  produced empty results.
-- The Excel export loop started at index `1` instead of `0`, silently
-  dropping the first row of every export.
-- The code that inserted search results into the results table lived
-  entirely inside a **commented-out block**. The active code path fetched
-  data from the database and then did nothing with it.
-- The "show call details" (per-number pie charts) feature was wired to a
-  button that was permanently disabled, because no input field ever
-  existed for the phone number it needed — the feature was unreachable.
-- Column headers and Treeview sizing were recomputed from scratch on
-  *every single search*, instead of once at startup.
-
-</details>
-
-<details>
-<summary><b>🔓 Security and robustness</b></summary>
-<br>
-
-- Every SQL query — search filters, dropdown population, per-number chart
-  queries, the bulk insert during import — was built by **string
-  concatenation**, making the app vulnerable to SQL injection through
-  user-entered filter text.
-- The database connection was opened once, at import time, with no error
-  handling — if SQL Server wasn't reachable, the app crashed on startup
-  with a raw Python traceback.
-- No logging, no input validation. A malformed row in the source file
-  either crashed the import or was silently skipped with no record of
-  what or why.
-- No automated tests of any kind.
-
-</details>
-
-<details>
-<summary><b>🏚️ Structure and maintainability</b></summary>
-<br>
-
-- Everything lived in two folders (`Control`, `View`) with a mix of
-  English and transliterated-Persian ("Finglish") identifiers, and
-  PascalCase variable names throughout — not idiomatic Python.
-- Configuration (database server, driver, credentials) was hardcoded
-  directly in source.
-- The UI text was entirely in Persian, coupling the display language to
-  the source code itself.
-
-</details>
-
-<details>
-<summary><b>🎨 UI</b></summary>
-<br>
-
-- Fixed pixel coordinates (`.place(x=, y=)`) everywhere, not resizable, no
-  visual system — no consistent colors, spacing, or typography.
-- "Reporting" — the one feature meant to turn raw call data into insight —
-  was completely inert, for the reasons above.
-- Exporting meant exporting to Excel and nothing else: no way to keep a
-  filtered view inside the database itself, and no record of what filter
-  produced a given export.
+- **Bad rows are normal.** A switch log carries truncated lines, impossible
+  durations and malformed timestamps. Silently skipping them makes every
+  later number quietly wrong, so each row is checked before it is stored
+  and every rejection is written down with its reason.
+- **The filters are user text.** Anything the staff type reaches a query,
+  so every statement is parameterized — string concatenation would make
+  the app injectable through its own filter box.
+- **An export has to be answerable for.** "Where did this number come
+  from?" needs an answer months later, so an export is a tracked batch
+  with the filter that produced it recorded beside it, not a loose
+  spreadsheet.
+- **The database is not always there.** SQL Server being unreachable is a
+  Tuesday, not an emergency: the connection is lazy, failures surface as a
+  status-bar message, and the window stays usable.
 
 </details>
 
 <br>
 
-## 🛠️ What We Did About It
+## 🛠️ How It Is Built
 
-The rework happened in phases, each building on the last:
+Each piece exists for a reason, and they build on each other:
 
 <table>
 <tr><th align="left">#</th><th align="left">Phase</th><th align="left">What changed</th></tr>
-<tr><td>1</td><td><b>Translate and rewrite</b></td><td>Every identifier, UI label, comment, and message moved to English; rewritten module-by-module in idiomatic Python (PEP 8, small single-purpose functions), fixing the dead-code bugs along the way</td></tr>
-<tr><td>2</td><td><b>Make the queries safe</b></td><td>Every SQL statement rewritten to use parameterized queries (<code>cursor.execute(sql, params)</code>) instead of string concatenation</td></tr>
-<tr><td>3</td><td><b>Give it a real structure</b></td><td>Split into focused packages by responsibility — <code>core</code>, <code>database</code>, <code>etl</code>, <code>reporting</code>, <code>ui</code></td></tr>
-<tr><td>4</td><td><b>Make failure survivable</b></td><td>Lazy DB connection wrapped in a clear <code>DatabaseConnectionError</code>; every DB-touching button click is wrapped so failure shows a status-bar message instead of crashing; rotating file + console logging replaced silence</td></tr>
+<tr><td>1</td><td><b>Written for publication</b></td><td>Originally Persian-language for an internal team; every identifier, UI label, comment and message is English here, in idiomatic Python (PEP 8, small single-purpose functions)</td></tr>
+<tr><td>2</td><td><b>Queries that cannot be injected</b></td><td>Every SQL statement is parameterized (<code>cursor.execute(sql, params)</code>) — the filter box is user input and reaches the database</td></tr>
+<tr><td>3</td><td><b>A package per responsibility</b></td><td><code>core</code>, <code>database</code>, <code>etl</code>, <code>reporting</code>, <code>ui</code> — each one small enough to hold in your head</td></tr>
+<tr><td>4</td><td><b>Failure is survivable</b></td><td>Lazy DB connection wrapped in a clear <code>DatabaseConnectionError</code>; every DB-touching button click shows a status-bar message instead of crashing; rotating file + console logging</td></tr>
 <tr><td>5</td><td><b>Validate the data, don't just hope</b></td><td><code>etl/record_validator.py</code> checks every parsed row before it reaches the database; rejected rows go to <code>logs/rejected_rows.csv</code> with the reason, instead of vanishing</td></tr>
 <tr><td>6</td><td><b>Add tests</b></td><td>A pytest suite covers every pure-logic module — classification, datetime splitting, query building, filter description, record validation, table-name sanitization</td></tr>
-<tr><td>7</td><td><b>Redesign the UI</b></td><td>A single theme module (<code>ui/theme.py</code>) defines colors/fonts/<code>ttk</code> styles; the pixel-coordinate layout became a responsive grid, window is resizable</td></tr>
-<tr><td>8</td><td><b>Fix reporting for real</b></td><td>The dead "show details" feature replaced with a working 5-chart Dashboard, rendered with matplotlib embedded directly in the window</td></tr>
-<tr><td>9</td><td><b>Turn "export" into a small data-warehouse pattern</b></td><td>"Export to Excel" became "Export to Table" — batch-tracked, lineage-recorded exports into SQL Server itself (see below)</td></tr>
+<tr><td>7</td><td><b>One visual system</b></td><td>A single theme module (<code>ui/theme.py</code>) defines colors/fonts/<code>ttk</code> styles; a responsive grid rather than pixel coordinates, so the window resizes</td></tr>
+<tr><td>8</td><td><b>Reporting people can act on</b></td><td>A 5-chart Dashboard rendered with matplotlib embedded directly in the window — calls over time, by channel, by outcome, by hour, and duration bands</td></tr>
+<tr><td>9</td><td><b>Export as a small data-warehouse pattern</b></td><td>"Export to Table" — batch-tracked, lineage-recorded exports into SQL Server itself, so every extract can be traced back to the filter that made it (see below)</td></tr>
 </table>
 
-> The result is the same idea the 2020 version was reaching for — get data
-> out of a text file into something people can filter, browse, and learn
-> from — but built the way that job is actually done: parameterized
-> queries, validated input, tracked lineage, tests, and a UI that doesn't
-> fall over when the database isn't there.
+> The result is one idea carried through: get data out of a text file and
+> into something people can filter, browse and learn from — built the way
+> that job is actually done, with parameterized queries, validated input,
+> tracked lineage, tests, and a UI that doesn't fall over when the
+> database isn't there.
 
 <br>
 
